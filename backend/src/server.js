@@ -1,28 +1,41 @@
-import express from 'express'
-import dotenv from 'dotenv'
-import path from "path"
+import express from "express";
+import dotenv from "dotenv";
+import path from "path";
+import { fileURLToPath } from "url";
 
-import authRoutes from "./routes/auth.routes.js"
-import messageRoutes from "./routes/message.route.js"
+import authRoutes from "./routes/auth.routes.js";
+import messageRoutes from "./routes/message.route.js";
 
-dotenv.config()
+dotenv.config();
 
 const app = express();
+
+// Needed because you're using ES Modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Go from backend/src → project root
+const rootDir = path.resolve(__dirname, "../../");
+
 const PORT = process.env.PORT || 3000;
 
-// 🔥 THIS IS THE IMPORTANT LINE
-const rootDir = path.resolve();
+// Middleware
+app.use(express.json());
 
-app.use("/api/auth",authRoutes)
-app.use("/api/messages",messageRoutes)
+// API Routes
+app.use("/api/auth", authRoutes);
+app.use("/api/messages", messageRoutes);
 
-if(process.env.NODE_ENV==="production"){
-    app.use(express.static(path.join(rootDir,"frontend","dist")));
+// 🔥 Serve frontend in production
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(rootDir, "frontend", "dist")));
 
-    app.get("*",(req,res)=>{
-        res.sendFile(path.join(rootDir,"frontend","dist","index.html"));
-    });
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(rootDir, "frontend", "dist", "index.html"));
+  });
 }
-console.log("NODE_ENV:", process.env.NODE_ENV);
 
-app.listen(PORT, ()=>console.log(`server is running on port ${PORT}`))
+app.listen(PORT, () => {
+  console.log("NODE_ENV:", process.env.NODE_ENV);
+  console.log(`Server is running on port ${PORT}`);
+});
