@@ -23,5 +23,6 @@ if(process.env.NODE_ENV==="production"){
         res.sendFile(path.join(rootDir,"frontend","dist","index.html"));
     });
 }
+console.log("NODE_ENV:", process.env.NODE_ENV);
 
 app.listen(PORT, ()=>console.log(`server is running on port ${PORT}`))
