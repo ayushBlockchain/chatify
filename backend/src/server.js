@@ -5,16 +5,16 @@ import { fileURLToPath } from "url";
 
 import authRoutes from "./routes/auth.routes.js";
 import messageRoutes from "./routes/message.route.js";
+import { connectDB } from "./lib/db.js";
 
 dotenv.config();
 
 const app = express();
 
-// Needed because you're using ES Modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Go from backend/src → project root
+// backend/src → project root
 const rootDir = path.resolve(__dirname, "../../");
 
 const PORT = process.env.PORT || 3000;
@@ -22,11 +22,11 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(express.json());
 
-// API Routes
+// Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 
-// 🔥 Serve frontend in production
+// Serve frontend in production
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(rootDir, "frontend", "dist")));
 
@@ -35,7 +35,7 @@ if (process.env.NODE_ENV === "production") {
   });
 }
 
-app.listen(PORT, () => {
-  console.log("NODE_ENV:", process.env.NODE_ENV);
+app.listen(PORT, async () => {
   console.log(`Server is running on port ${PORT}`);
+  await connectDB();
 });
